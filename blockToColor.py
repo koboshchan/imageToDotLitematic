@@ -1,6 +1,6 @@
 import os,json
 from PIL import Image, ImageStat
-imgs=os.listdir('blackwhite')
+imgs=os.listdir('wool')
 colors={}
 def rgb_to_hex(r, g, b):
     return '{:02x}{:02x}{:02x}'.format(r, g, b)
