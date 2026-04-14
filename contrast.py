@@ -28,7 +28,7 @@ def apply_contrast(pixel, threshold):
 
 
 # Configuration
-CONTRAST_THRESHOLD = 75  # 0-100: where to separate light from dark
+CONTRAST_THRESHOLD = 45  # 0-100: where to separate light from dark
                          # 0 = everything is white (except pure black)
                          # 50 = middle gray is the separation
                          # 100 = everything is black (except pure white)

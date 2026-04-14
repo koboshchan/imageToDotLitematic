@@ -67,8 +67,8 @@ def selective_dilate_image(input_path, output_path, size=3, dilate_dark=True):
 
 # --- Configuration ---
 input_filename = "image.png" # <--- IMPORTANT: Change this to your image file name
-output_filename = "image.png"
-dilation_size = 5  # Adjust for more or less dilation (e.g., 3, 5, 7)
+output_filename = "image_dilated.png"
+dilation_size = 1  # Adjust for more or less dilation (e.g., 3, 5, 7)
 
 # Set to True to dilate dark lines/shapes
 # Set to False to dilate light areas/highlights

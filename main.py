@@ -38,21 +38,23 @@ pixels = list(img.getdata())
 width, height = img.size
 pixels = [pixels[i * width:(i + 1) * width] for i in range(height)]
 
-# Region for flat image (X = width, Y = 1, Z = height)
-reg = Region(0, 0, 0, width, 1, height)
+# Region for flat image (rotated 90° CCW around Y-axis: X = height, Y = 1, Z = width)
+reg = Region(0, 0, 0, height, 1, width)
 schem = reg.as_schematic(name="img", author="me", description="flat image pixel-art")
 
 pbar = tqdm.tqdm(total=width * height)
 
-# Build flat pixel art on ground (Y=0)
+# Build flat pixel art on ground (Y=0) with 90° CCW rotation around Y-axis
 for z in range(height):
     for x in range(width):
         color = pixels[z][x]
         color = closest(colors, tuple(color))
         block_id = blocks[rgb_to_hex(*color)]
 
-        # Place block on ground (flat)
-        reg.setblock(x, 0, z, BlockState("minecraft:" + block_id))
+        # Rotate 90° counter-clockwise around Y-axis: (x, z) → (z, width-1-x)
+        rotated_x = z
+        rotated_z = width - 1 - x
+        reg.setblock(rotated_x, 0, rotated_z, BlockState("minecraft:" + block_id))
 
         pbar.update(1)
 
