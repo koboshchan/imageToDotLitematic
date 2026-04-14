@@ -1,4 +1,3 @@
-import numpy as np
 import tqdm
 from litemapy import Schematic, Region, BlockState
 

@@ -1,4 +1,7 @@
-import numpy as np, json, tqdm
+import faulthandler
+faulthandler.enable()
+
+import numpy as np, json, tqdm, argparse
 from PIL import Image
 from litemapy import Schematic, Region, BlockState
 
@@ -22,6 +25,12 @@ def rgb_to_hex(r, g, b):
     return '{:02x}{:02x}{:02x}'.format(r, g, b)
 
 
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description='Convert image to Minecraft pixel art schematic')
+parser.add_argument('-i', '--image', default='image.png', help='Input image file (default: image.png)')
+parser.add_argument('-n', '--name', default='img', help='Schematic name and output file base name (default: img)')
+args = parser.parse_args()
+
 # Load block color mapping
 with open('blocks.json') as f:
     blocks = json.load(f)
@@ -29,18 +38,18 @@ with open('blocks.json') as f:
 colors = list(map(hex_to_rgb, blocks.keys()))
 
 # Load and prepare image
-img = Image.open('image.png').convert('RGB')
+img = Image.open(args.image).convert('RGB')
 img = img.resize((128, 128))
 img = img.rotate(90, expand=True)
 img = img.rotate(180)
 
-pixels = list(img.getdata())
+pixels = list(img.get_flattened_data())
 width, height = img.size
 pixels = [pixels[i * width:(i + 1) * width] for i in range(height)]
 
 # Region for flat image (rotated 90° CCW around Y-axis: X = height, Y = 1, Z = width)
 reg = Region(0, 0, 0, height, 1, width)
-schem = reg.as_schematic(name="img", author="me", description="flat image pixel-art")
+schem = reg.as_schematic(name=args.name, author="me", description="flat image pixel-art")
 
 pbar = tqdm.tqdm(total=width * height)
 
@@ -54,9 +63,12 @@ for z in range(height):
         # Rotate 90° counter-clockwise around Y-axis: (x, z) → (z, width-1-x)
         rotated_x = z
         rotated_z = width - 1 - x
-        reg.setblock(rotated_x, 0, rotated_z, BlockState("minecraft:" + block_id))
+        reg[rotated_x, 0, rotated_z] = BlockState("minecraft:" + block_id)
 
         pbar.update(1)
 
+# Close progress bar explicitly
+pbar.close()
+
 # Save to litematic
-schem.save("img.litematic")
+schem.save(f"{args.name}.litematic")
