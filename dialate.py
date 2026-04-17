@@ -1,4 +1,5 @@
 from PIL import Image, ImageFilter
+import argparse
 
 def selective_dilate_image(input_path, output_path, size=3, dilate_dark=True, min_dimension=200):
     """
@@ -88,16 +89,15 @@ def selective_dilate_image(input_path, output_path, size=3, dilate_dark=True, mi
         print(f"An error occurred: {e}")
 
 # --- Configuration ---
-input_filename = "image.png" # <--- IMPORTANT: Change this to your image file name
-output_filename = "image_dilated.png"
-dilation_size = 3  # Adjust for more or less dilation (e.g., 3, 5, 7)
-min_pixel_dimension = 200  # Minimum pixel dimension. If image is smaller, it will be resized UP for better quality.
-                           # Set to 0 to disable automatic resizing.
+parser = argparse.ArgumentParser(description='Dilate image')
+parser.add_argument('-s', '--size', type=int, required=True, help='Dilation size (e.g., 3, 5, 7)')
+parser.add_argument('-i', '--input', default='image.png', help='Input image file (default: image.png)')
+parser.add_argument('-o', '--output', default='image_dilated.png', help='Output image file (default: image_dilated.png)')
+parser.add_argument('-m', '--min-dimension', type=int, default=200, help='Minimum pixel dimension for resizing (default: 200, set to 0 to disable)')
+parser.add_argument('-d', '--dilate-dark', action='store_true', default=True, help='Dilate dark colors (default: True)')
+args = parser.parse_args()
 
-# Set to True to dilate dark lines/shapes
-# Set to False to dilate light areas/highlights
-dilate_dark_colors = True 
 # ---------------------
 
 # Run the function
-selective_dilate_image(input_filename, output_filename, dilation_size, dilate_dark=dilate_dark_colors, min_dimension=min_pixel_dimension)
+selective_dilate_image(args.input, args.output, args.size, dilate_dark=args.dilate_dark, min_dimension=args.min_dimension)

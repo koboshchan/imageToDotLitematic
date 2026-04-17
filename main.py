@@ -25,11 +25,23 @@ def rgb_to_hex(r, g, b):
     return '{:02x}{:02x}{:02x}'.format(r, g, b)
 
 
+# Level to size mapping
+LEVEL_SIZES = {
+    0: 128,
+    1: 256,
+    2: 512,
+    3: 1024,
+    4: 2048
+}
+
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Convert image to Minecraft pixel art schematic')
 parser.add_argument('-i', '--image', default='image.png', help='Input image file (default: image.png)')
 parser.add_argument('-n', '--name', default='img', help='Schematic name and output file base name (default: img)')
+parser.add_argument('-l', '--level', type=int, default=0, choices=[0, 1, 2, 3, 4], help='Level (0-4): 0=128×128, 1=256×256, 2=512×512, 3=1024×1024, 4=2048×2048 (default: 0)')
 args = parser.parse_args()
+
+size = LEVEL_SIZES[args.level]
 
 # Load block color mapping
 with open('blocks.json') as f:
@@ -39,7 +51,7 @@ colors = list(map(hex_to_rgb, blocks.keys()))
 
 # Load and prepare image
 img = Image.open(args.image).convert('RGB')
-img = img.resize((128, 128))
+img = img.resize((size, size))
 img = img.rotate(90, expand=True)
 img = img.rotate(180)
 
