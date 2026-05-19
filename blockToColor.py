@@ -1,4 +1,4 @@
-import os, json, math
+import os, json, math, argparse
 from PIL import Image, ImageStat
 
 
@@ -14,6 +14,11 @@ def color_distance(rgb1, rgb2):
     return math.sqrt(sum((a - b) ** 2 for a, b in zip(rgb1, rgb2)))
 
 
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description='Map block colors from images to Minecraft blocks')
+parser.add_argument('-b', '--block-set', default='cheap', help='Block set name (default: cheap)')
+args = parser.parse_args()
+
 with open("colors.json", "r") as f:
     data = json.load(f)
 
@@ -24,7 +29,7 @@ for color_id, color_data in data.items():
             {"rgb": int_to_rgb(shade_int), "hex": rgb_to_hex(*int_to_rgb(shade_int))}
         )
 
-imgs = os.listdir("cheap")
+imgs = os.listdir(args.block_set)
 colors = {}
 
 for img_name in imgs:
@@ -48,5 +53,5 @@ for img_name in imgs:
     if best_match:
         colors[best_match["hex"]] = img_name.split(".")[0]
 
-with open("blocks.json", "w") as f:
+with open(f"{args.block_set}.json", "w") as f:
     json.dump(colors, f, indent=4, sort_keys=True)

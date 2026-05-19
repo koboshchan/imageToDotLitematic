@@ -39,12 +39,13 @@ parser = argparse.ArgumentParser(description='Convert image to Minecraft pixel a
 parser.add_argument('-i', '--image', default='image.png', help='Input image file (default: image.png)')
 parser.add_argument('-n', '--name', default='img', help='Schematic name and output file base name (default: img)')
 parser.add_argument('-l', '--level', type=int, default=0, choices=[0, 1, 2, 3, 4], help='Level (0-4): 0=128×128, 1=256×256, 2=512×512, 3=1024×1024, 4=2048×2048 (default: 0)')
+parser.add_argument('-b', '--block-set', default='cheap', help='Block set name (default: cheap)')
 args = parser.parse_args()
 
 size = LEVEL_SIZES[args.level]
 
 # Load block color mapping
-with open('blocks.json') as f:
+with open(f'{args.block_set}_blocks.json') as f:
     blocks = json.load(f)
 
 colors = list(map(hex_to_rgb, blocks.keys()))
